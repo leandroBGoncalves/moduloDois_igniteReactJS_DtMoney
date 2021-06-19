@@ -11,11 +11,22 @@ interface Transaction {
 
 }
 
+//forma de através do typeScript herdar interfaces ja criadas
+
+type TransactionInput = Omit<Transaction, 'id' | 'createdAt'>;
+
 interface TransactionsTableProviderProps {
     children: ReactNode;
 }
 
-export const TransactionsContext = createContext<Transaction[]>([]);
+interface TransactionContextData {
+    transactions: Transaction[];
+    creatTransaction: (transaction: TransactionInput) => Promise<void>;
+}
+
+export const TransactionsContext = createContext<TransactionContextData>(
+    {} as TransactionContextData
+    );
 
 
 export function TransactionsTableProvider({children}: TransactionsTableProviderProps) {
@@ -26,8 +37,12 @@ export function TransactionsTableProvider({children}: TransactionsTableProviderP
         .then(response => setTransactions(response.data.transactions))
     }, []);
 
+   async function creatTransaction(transaction: TransactionInput) {
+       await api.post('/transactions', transaction)
+    }
+
     return (
-        <TransactionsContext.Provider value={transactions}>
+        <TransactionsContext.Provider value={{ transactions, creatTransaction }}>
             {children}
         </TransactionsContext.Provider>
     );
