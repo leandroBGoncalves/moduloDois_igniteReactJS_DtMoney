@@ -3,8 +3,7 @@ import Modal from 'react-modal';
 import CloseImg from '../../assets/close.svg';
 import IncomeImg from '../../assets/income.svg';
 import OutcomeImg from '../../assets/outcome.svg';
-import { api } from '../../services/api';
-import { TransactionsContext } from '../../TransactionsContext';
+import { useTransactions } from '../../Hooks/TransactionsContext';
 import { Container, RadiuButton, TransactionTypeContainer } from './styles';
 
 interface NewTransactionModalProps {
@@ -13,7 +12,7 @@ interface NewTransactionModalProps {
 }
 
 export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionModalProps) {
-    const {creatTransaction} = useContext(TransactionsContext);
+    const {creatTransaction} = useTransactions();
     //Abaixo estado utilizado para guardar a categoria selecionada, entrada ou saida
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState(0);
@@ -30,6 +29,11 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
             category,
             type
         })
+
+        setTitle('');
+        setAmount(0);
+        setCategory('');
+        setType('deposit');
         
         onRequestClose()
     }
@@ -50,7 +54,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
                 <img src={CloseImg} alt="Fechar Modal"/>
             </button>
 
-            <Container onClick={handleCreateNewTransaction}>
+            <Container onSubmit={handleCreateNewTransaction}>
             <h2>Cadastrar Transação</h2>
 
 
